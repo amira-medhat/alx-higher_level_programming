@@ -1,5 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
+
+struct timespec;
+
 #include <Python.h>
 /**
  * print_python_list_info -  function that prints some basic
