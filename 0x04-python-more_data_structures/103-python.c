@@ -8,16 +8,19 @@ struct timespec;
 
 void print_python_bytes(PyObject *p) {
     printf("[.] bytes object info\n");
+
     if (!PyBytes_Check(p)) {
         printf("  [ERROR] Invalid Bytes Object\n");
         return;
     }
-    printf("  size: %ld\n", PyBytes_Size(p));
-    printf("  trying string: %s\n", PyBytes_AsString(p));
+
+    printf("  size: %ld\n", ((PyVarObject *)p)->ob_size);
+
+    printf("  trying string: %s\n", ((PyBytesObject *)p)->ob_sval);
+
     printf("  first 10 bytes: ");
-    fflush(stdout);
-    for (int i = 0; i < 10 && i < PyBytes_Size(p); i++) {
-        printf("%02x ", (unsigned char)PyBytes_AsString(p)[i]);
+    for (Py_ssize_t i = 0; i < ((PyVarObject *)p)->ob_size && i < 10; ++i) {
+        printf("%02x ", ((unsigned char *)((PyBytesObject *)p)->ob_sval)[i]);
     }
     printf("\n");
 }
@@ -27,12 +30,14 @@ void print_python_list(PyObject *p) {
     PyObject *item;
 
     printf("[*] Python list info\n");
-    size = PyList_Size(p);
+
+    size = ((PyVarObject *)p)->ob_size;
     printf("[*] Size of the Python List = %ld\n", size);
+
     printf("[*] Allocated = %ld\n", ((PyListObject *)p)->allocated);
 
-    for (i = 0; i < size; i++) {
-        item = PyList_GetItem(p, i);
+    for (i = 0; i < size; ++i) {
+        item = ((PyListObject *)p)->ob_item[i];
         printf("Element %ld: ", i);
 
         if (PyBytes_Check(item)) {
