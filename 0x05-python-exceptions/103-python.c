@@ -9,7 +9,7 @@ struct timespec;
 void print_python_list(PyObject *p) {
     printf("[*] Python list info\n");
 
-    if (!PyObject_TypeCheck(p, &PyList_Type)) {
+    if (!PyList_Check(p)) {
         printf("  [ERROR] Invalid List Object\n");
         return;
     }
@@ -21,15 +21,16 @@ void print_python_list(PyObject *p) {
     printf("[*] Allocated = %zd\n", allocated);
 
     for (Py_ssize_t i = 0; i < size; ++i) {
-        PyObject *element = PyList_GetItem(p, i);
+        PyObject *element = PySequence_GetItem(p, i);
         printf("Element %zd: %s\n", i, element->ob_type->tp_name);
+        Py_DECREF(element); // Release the reference
     }
 }
 
 void print_python_bytes(PyObject *p) {
     printf("[.] bytes object info\n");
 
-    if (!PyObject_TypeCheck(p, &PyBytes_Type)) {
+    if (!PyBytes_Check(p)) {
         printf("  [ERROR] Invalid Bytes Object\n");
         return;
     }
@@ -42,4 +43,15 @@ void print_python_bytes(PyObject *p) {
         printf("%02x ", (unsigned char)((PyBytesObject *)p)->ob_sval[i]);
     }
     printf("\n");
+}
+
+void print_python_float(PyObject *p) {
+    printf("[.] float object info\n");
+
+    if (!PyFloat_Check(p)) {
+        printf("  [ERROR] Invalid Float Object\n");
+        return;
+    }
+
+    printf("  value: %.17g\n", ((PyFloatObject *)p)->ob_fval);
 }
