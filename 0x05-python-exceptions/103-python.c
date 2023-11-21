@@ -6,28 +6,44 @@ struct timespec;
 
 #include <Python.h>
 
-void print_python_list(PyObject *p) {
-    printf("[*] Python list info\n");
+void print_python_bytes(PyObject *p);
+void print_python_float(PyObject *p);
 
-    if (!PyList_Check(p)) {
+void print_python_list(PyObject *p) {
+    Py_ssize_t size, alloc, i;
+    const char *type;
+    PyListObject *list = (PyListObject *)p;
+    PyVarObject *var = (PyVarObject *)p;
+
+    size = var->ob_size;
+    alloc = list->allocated;
+
+    printf("[*] Python list info\n");
+    if (strcmp(p->ob_type->tp_name, "list") != 0)
+    {
         printf("  [ERROR] Invalid List Object\n");
         return;
     }
 
-    Py_ssize_t size = PyObject_Length(p);
-    Py_ssize_t allocated = ((PyListObject *)p)->allocated;
+    printf("[*] Size of the Python List = %ld\n", size);
+    printf("[*] Allocated = %ld\n", alloc);
 
-    printf("[*] Size of the Python List = %zd\n", size);
-    printf("[*] Allocated = %zd\n", allocated);
-
-    for (Py_ssize_t i = 0; i < size; ++i) {
-        PyObject *element = PySequence_GetItem(p, i);
-        printf("Element %zd: %s\n", i, element->ob_type->tp_name);
-        Py_DECREF(element); // Release the reference
+    for (i = 0; i < size; i++)
+    {
+        type = list->ob_item[i]->ob_type->tp_name;
+        printf("Element %ld: %s\n", i, type);
+        if (strcmp(type, "bytes") == 0)
+            print_python_bytes(list->ob_item[i]);
+        else if (strcmp(type, "float") == 0)
+            print_python_float(list->ob_item[i]);
     }
 }
 
 void print_python_bytes(PyObject *p) {
+    Py_ssize_t size;
+    Py_ssize_t i;
+    char *str;
+
     printf("[.] bytes object info\n");
 
     if (!PyBytes_Check(p)) {
@@ -35,12 +51,15 @@ void print_python_bytes(PyObject *p) {
         return;
     }
 
-    Py_ssize_t size = PyObject_Length(p);
-    printf("  size: %zd\n", size);
+    size = PyBytes_Size(p);
+    str = ((PyBytesObject *)p)->ob_sval;
 
-    printf("  trying string: ");
-    for (Py_ssize_t i = 0; i < size && i < 10; ++i) {
-        printf("%02x ", (unsigned char)((PyBytesObject *)p)->ob_sval[i]);
+    printf("  size: %zd\n", size);
+    printf("  trying string: %s\n", str);
+
+    printf("  first %d bytes: ", size > 10 ? 10 : (int)size);
+    for (i = 0; i < size && i < 10; ++i) {
+        printf("%02x ", (unsigned char)str[i]);
     }
     printf("\n");
 }
@@ -53,5 +72,5 @@ void print_python_float(PyObject *p) {
         return;
     }
 
-    printf("  value: %.17g\n", ((PyFloatObject *)p)->ob_fval);
+    printf("  value: %.17g\n", PyFloat_AsDouble(p));
 }
