@@ -56,6 +56,5 @@ class Rectangle:
         return ("".join(rect))
 
     def __repr__(self):
-        rect = "Rectangle(" + str(self.__width) + \
-        \ ", " + str(self.__height) + ")"
+        rect = "Rectangle({}, {})".format(self.__width, self.__height)
         return (rect)
