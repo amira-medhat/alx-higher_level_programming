@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-class LockedClass:
     """
     A class that restricts dynamic creation of instance attributes, allowing only 'first_name'.
 
@@ -7,6 +6,7 @@ class LockedClass:
         None
     """
 
+class LockedClass:
     def __setattr__(self, attr, value):
         """
         Overrides the default attribute setting behavior to restrict attribute creation.
