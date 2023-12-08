@@ -23,4 +23,3 @@ class LockedClass:
                 "'LockedClass' object has no attribute '{}'".format(attr)
             )
         self.__dict__[attr] = value
-        
