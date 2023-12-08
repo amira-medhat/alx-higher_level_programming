@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+
     """
     A class that restricts dynamic creation of instance attributes, allowing only 'first_name'.
 
