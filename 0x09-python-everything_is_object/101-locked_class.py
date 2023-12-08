@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 class LockedClass:
     """
     A class that restricts dynamic creation of instance attributes, allowing only 'first_name'.
