@@ -1,4 +1,3 @@
-0-read_file.py
 #!/usr/bin/python3
 """Reads from standard input and computes metrics.
 
