@@ -1,6 +1,8 @@
 #!/usr/bin/python3
-class Square:
-    """Represents a simple square."""
 
-    def __init__(self):
-        pass
+"""Define a class Square."""
+
+
+class Square:
+    """Represent a square."""
+    pass
